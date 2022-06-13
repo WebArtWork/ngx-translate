@@ -22,3 +22,4 @@ import { TranslateModule } from 'src/app/modules/translate/translate.module';
   <span translate>carwash.Name </span>
   ```
 ## 5)On page 'Translate' write correctly translate
+# Find waw-translate and and do it step by step
