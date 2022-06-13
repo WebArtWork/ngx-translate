@@ -23,3 +23,6 @@ import { TranslateModule } from 'src/app/modules/translate/translate.module';
   ```
 ## 5)On page 'Translate' write correctly translate
 # Find waw-translate and and do it step by step
+```
+https://github.com/WebArtWork/waw-translate
+```
