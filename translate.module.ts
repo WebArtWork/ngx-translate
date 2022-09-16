@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslateDirective } from './translate.directive';
 import { TranslateComponent } from './translate/translate.component';
 import { WacomModule } from 'wacom';
+import { TranslatePipe } from './translate.pipe';
 @NgModule({
 	imports: [
 		CommonModule,
@@ -13,12 +14,14 @@ import { WacomModule } from 'wacom';
 	declarations: [
   		TranslateDirective,
 		TranslateComponent,
+  		TranslatePipe
 	],
 	exports: [
 		TranslateComponent,
-		TranslateDirective
+		TranslateDirective,
+		TranslatePipe
 	],
 	providers: []
 })
 
-export class TranslateModule { } 
+export class TranslateModule { }

@@ -29,7 +29,7 @@ export class TranslateService {
 		this.store.get('language', code => {
 			if (code) {
 				const index = this.languages.map(l => l.code).indexOf(code);
-				this.language = this.languages[index];
+				if (index >= 0) this.language = this.languages[index];
 			}
 		});
 
@@ -117,12 +117,16 @@ export class TranslateService {
 		}
 	};
 
-	translate(slug, reset) {
+	translate(slug: string, reset?) {
 		if (!slug) return '';
+
+		if (slug.split('.').length<2) return slug;
 
 		if (!this.resets[slug]) this.resets[slug] = [];
 
-		this.resets[slug].push(reset);
+		if (reset) {
+			this.resets[slug].push(reset);
+		}
 
 		if (!this.translates[this.language.code]) {
 			this.translates[this.language.code] = {};
