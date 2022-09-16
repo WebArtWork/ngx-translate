@@ -1,4 +1,4 @@
-1) ##create admin page 'translate'
+## 1) create admin page 'translate'
 ```
 waw page admin translate
 ```
@@ -23,6 +23,8 @@ import { TranslateModule } from 'src/app/modules/translate/translate.module';
 ## 5)Your_page_as_you_want_to_translat.component.html
   5.1)Use attribute "translate"
   5.2)First word to the dot its name for your page
+  ```
+  <span translate>Page_nam.Name </span>
   ```
 ## 6) For translate some placeholder we need use pipe, and next form
 ```
