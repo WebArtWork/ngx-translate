@@ -32,4 +32,3 @@ import { TranslateModule } from 'src/app/modules/translate/translate.module';
 6.2)Text after dot it's your placeholder text
 placeholder = "{{'Page_name.Placeholder_text'|translate}}"
 ```
-## 7) Go to  page admin translate, and translate your words
