@@ -22,35 +22,43 @@ export class TranslateService {
 		private core: CoreService,
 		private store: StoreService
 	) {
-		this.store.getJson('translates', translates => {
-			this.translates = translates || {};
+		this.store.getJson('translates', (translates) => {
+			if (translates) {
+				this.translates = translates || {};
+			}
 		});
 
-		this.store.get('language', code => {
+		this.store.get('language', (code) => {
 			if (code) {
-				const index = this.languages.map(l => l.code).indexOf(code);
+				const index = this.languages.map((l) => l.code).indexOf(code);
 				if (index >= 0) this.language = this.languages[index];
 			}
 		});
 
-		this.store.getJson('words', words => {
-			this.words = words || [];
+		this.store.getJson('words', (words) => {
+			if (words) {
+				this.words = words;
+			}
 		});
 
-		this.http.get('/api/translate/get', obj => {
-			this.translates = obj;
+		this.http.get('/api/translate/get', (obj) => {
+			if (obj) {
+				this.translates = obj;
 
-			this.store.setJson('translates', this.translates);
+				this.store.setJson('translates', this.translates);
+			}
 		});
 
 		this.http.get('/api/word/get', (arr) => {
-			this.words = arr;
+			if (arr) {
+				this.words = arr;
 
-			this.store.setJson('words', this.words);
+				this.store.setJson('words', this.words);
 
-			for (let i = 0; i < arr.length; i++) {
-				if (this.pages.indexOf(arr[i].page) < 0) {
-					this.pages.push(arr[i].page);
+				for (let i = 0; i < arr.length; i++) {
+					if (this.pages.indexOf(arr[i].page) < 0) {
+						this.pages.push(arr[i].page);
+					}
 				}
 			}
 
@@ -60,13 +68,15 @@ export class TranslateService {
 
 	/* Translate Management */
 
-	public words: Word[] = [];
+	words: Word[] = [];
 
-	public pages: string[] = [];
+	pages: string[] = [];
 
-	prepare_words(lang) {
+	prepare_words(lang: string) {
 		for (let j = 0; j < this.words.length; j++) {
-			this.words[j].translate = this.translates[lang][this.words[j].slug] || '';
+			this.words[j].translate = this.translates[lang]
+				? this.translates[lang][this.words[j].slug]
+				: '';
 		}
 	}
 
@@ -86,19 +96,25 @@ export class TranslateService {
 
 	/* Translate Use */
 
-	public languages: Language[] = environment.hasOwnProperty('languages') ? environment['languages'] : [{
-		code: 'en',
-		name: 'English'
-	}];
+	languages: Language[] = environment.hasOwnProperty('languages')
+		? (environment as unknown as { languages: [] }).languages
+		: [
+				{
+					code: 'en',
+					name: 'English'
+				}
+		  ];
 
-	public language: Language = this.languages.length ? this.languages[0] : {
-		code: 'en',
-		name: 'English'
-	};
+	language: Language = this.languages.length
+		? this.languages[0]
+		: {
+				code: 'en',
+				name: 'English'
+		  };
 
-	public translates: any = {};
+	translates: any = {};
 
-	private resets: any = {};
+	resets: any = {};
 
 	reset() {
 		for (let slug in this.resets) {
@@ -108,19 +124,21 @@ export class TranslateService {
 						this.translates[this.language.code] &&
 						this.translates[this.language.code][slug]
 					) {
-						this.resets[slug][i](this.translates[this.language.code][slug]);
+						this.resets[slug][i](
+							this.translates[this.language.code][slug]
+						);
 					} else {
 						this.resets[slug][i](this._slug2name(slug));
 					}
 				}
 			}
 		}
-	};
+	}
 
-	translate(slug: string, reset?) {
+	translate(slug: string, reset?: (translate: string) => void) {
 		if (!slug) return '';
 
-		if (slug.split('.').length<2) return slug;
+		if (slug.split('.').length < 2) return slug;
 
 		if (!this.resets[slug]) this.resets[slug] = [];
 
@@ -136,19 +154,23 @@ export class TranslateService {
 			return this.translates[this.language.code][slug];
 		}
 
-		if (this.words.map(w => w.slug).indexOf(slug) < 0) {
-			this.http.post('/api/word/create', {
-				slug: slug,
-				word: this._slug2name(slug),
-				page: slug.split('.')[0],
-				lang: this.language.code
-			}, word => this.words.push(word) );
+		if (this.words.map((w) => w.slug).indexOf(slug) < 0) {
+			this.http.post(
+				'/api/word/create',
+				{
+					slug: slug,
+					word: this._slug2name(slug),
+					page: slug.split('.')[0],
+					lang: this.language.code
+				},
+				(word) => this.words.push(word)
+			);
 		}
 
 		return this._slug2name(slug);
 	}
 
-	update_translate(slug: string, languageCode: string, translate: string){
+	update_translate(slug: string, languageCode: string, translate: string) {
 		this.core.afterWhile(this, () => {
 			this.http.post('/api/translate/create', {
 				slug,
@@ -173,7 +195,9 @@ export class TranslateService {
 
 	download_json() {
 		this.http.get('/api/translate/get_translates', (obj) => {
-			let dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.translates));
+			let dataStr =
+				'data:text/json;charset=utf-8,' +
+				encodeURIComponent(JSON.stringify(this.translates));
 
 			let link = document.createElement('a');
 
@@ -184,7 +208,7 @@ export class TranslateService {
 			link.click();
 
 			link.remove();
-		})
+		});
 	}
 
 	set_language(language: Language) {
@@ -193,7 +217,7 @@ export class TranslateService {
 		this.store.set('language', language.code);
 	}
 
-	private _slug2name(slug) {
+	private _slug2name(slug: string) {
 		return slug.substr(slug.indexOf('.') + 1);
 	}
 }

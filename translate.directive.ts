@@ -5,10 +5,13 @@ import { TranslateService } from 'src/app/modules/translate/translate.service';
 	selector: '[translate]'
 })
 export class TranslateDirective implements OnInit {
-	constructor(public elementRef: ElementRef, private tr: TranslateService) { }
+	constructor(public elementRef: ElementRef, private tr: TranslateService) {}
 	ngOnInit() {
-		this.elementRef.nativeElement.innerHTML = this.tr.translate(this.elementRef.nativeElement.innerHTML, translate => {
-			this.elementRef.nativeElement.innerHTML = translate;
-		});
+		this.elementRef.nativeElement.innerHTML = this.tr.translate(
+			this.elementRef.nativeElement.innerHTML,
+			(translate: string) => {
+				this.elementRef.nativeElement.innerHTML = translate;
+			}
+		);
 	}
 }
