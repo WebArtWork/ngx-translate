@@ -6,6 +6,7 @@ export interface Language {
 	code: string;
 	name: string;
 }
+
 interface Word {
 	slug: string;
 	translate: string;
@@ -31,6 +32,7 @@ export class TranslateService {
 		this.store.get('language', (code) => {
 			if (code) {
 				const index = this.languages.map((l) => l.code).indexOf(code);
+
 				if (index >= 0) this.language = this.languages[index];
 			}
 		});
@@ -117,7 +119,7 @@ export class TranslateService {
 	resets: any = {};
 
 	reset() {
-		for (let slug in this.resets) {
+		for (const slug in this.resets) {
 			if (Array.isArray(this.resets[slug])) {
 				for (let i = 0; i < this.resets[slug].length; i++) {
 					if (
@@ -195,11 +197,11 @@ export class TranslateService {
 
 	download_json() {
 		this.http.get('/api/translate/get_translates', (obj) => {
-			let dataStr =
+			const dataStr =
 				'data:text/json;charset=utf-8,' +
 				encodeURIComponent(JSON.stringify(this.translates));
 
-			let link = document.createElement('a');
+			const link = document.createElement('a');
 
 			link.href = dataStr;
 

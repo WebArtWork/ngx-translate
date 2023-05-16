@@ -6,7 +6,7 @@ import { TranslateService } from '../../translate.service';
 	styleUrls: ['./translates.component.scss']
 })
 export class TranslatesComponent {
-	page: string = '';
+	page = '';
 
 	lang: string = this.ts.language ? this.ts.language.code : 'en';
 

@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslatesComponent } from './translates.component';
 import { WacomModule } from 'wacom';
 import { TranslateModule } from '../../translate.module';
+import { ButtonModule } from 'src/app/modules/button/button.module';
 
 const routes: Routes = [
 	{
@@ -18,6 +19,7 @@ const routes: Routes = [
 		RouterModule.forChild(routes),
 		TranslateModule,
 		CommonModule,
+		ButtonModule,
 		FormsModule,
 		WacomModule
 	],
