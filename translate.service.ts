@@ -62,6 +62,8 @@ export class TranslateService {
 						this.pages.push(arr[i].page);
 					}
 				}
+
+				this._wordsLoaded = true;
 			}
 
 			this.prepare_words(this.language.code);
@@ -157,6 +159,22 @@ export class TranslateService {
 		}
 
 		if (this.words.map((w) => w.slug).indexOf(slug) < 0) {
+			this.create_word(slug);
+		}
+
+		return this._slug2name(slug);
+	}
+
+	private _created: Record<string, boolean> = {};
+	private _wordsLoaded = false;
+	create_word(slug: string) {
+		if (this._created[slug]) {
+			return;
+		}
+
+		if (this._wordsLoaded) {
+			this._created[slug] = true;
+
 			this.http.post(
 				'/api/word/create',
 				{
@@ -167,9 +185,11 @@ export class TranslateService {
 				},
 				(word) => this.words.push(word)
 			);
+		} else {
+			setTimeout(() => {
+				this.create_word(slug);
+			}, 500);
 		}
-
-		return this._slug2name(slug);
 	}
 
 	update_translate(slug: string, languageCode: string, translate: string) {
@@ -217,6 +237,21 @@ export class TranslateService {
 		this.language = language;
 
 		this.store.set('language', language.code);
+	}
+
+	next_language() {
+		for (let i = 0; i < this.languages.length; i++) {
+			if (this.languages[i].code === this.language.code) {
+				if (this.languages.length - 1 === i) {
+					this.language = this.languages[0];
+				} else {
+					this.language = this.languages[i + 1];
+				}
+				break;
+			}
+		}
+
+		this.store.set('language', this.language.code);
 	}
 
 	private _slug2name(slug: string) {
