@@ -36,9 +36,8 @@
 			<wbutton
 				class="translate__dawn-jcon"
 				(click)="ts.download_json()"
-				translate
 			>
-				Common.Download JSON
+				<span translate>Common.Download JSON</span>
 			</wbutton>
 		</div>
 		<div class="main__sub-inner translate__main-wrap">
@@ -48,16 +47,18 @@
 			>
 				<div class="main__contant-inner">
 					<div class="formboxs_label">
-						<span>{{word.word}}</span>
+						<span>
+							{{word.word}}
+						</span>
 						<div class="img-close" (click)="ts.delete(word)"></div>
 					</div>
 					<label class="formbox" for="">
 						<input
-							[(ngModel)]="word.translate"
+							placeholder="{{'Common.Translate'|translate}}"
 							(ngModelChange)="ts.update_translate(word.slug, lang, word.translate)"
+							[(ngModel)]="word.translate"
 							class="input"
 							type="text"
-							placeholder="{{'Common.Translate'|translate}}"
 						/>
 					</label>
 				</div>
