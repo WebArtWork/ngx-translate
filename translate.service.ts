@@ -183,7 +183,9 @@ export class TranslateService {
 					page: slug.split('.')[0],
 					lang: this.language.code
 				},
-				(word) => this.words.push(word)
+				(word) => {
+              this.words.push(word)
+				}
 			);
 		} else {
 			setTimeout(() => {
