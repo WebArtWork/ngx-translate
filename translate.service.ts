@@ -158,7 +158,7 @@ export class TranslateService {
 			return this.translates[this.language.code][slug];
 		}
 
-		if (this.words.map((w) => w.slug).indexOf(slug) < 0) {
+		if (this.words.map((w) => w?.slug || '').filter(w => !!w).indexOf(slug) < 0) {
 			this.create_word(slug);
 		}
 
