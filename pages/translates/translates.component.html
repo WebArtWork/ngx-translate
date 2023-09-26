@@ -6,12 +6,8 @@
 					<div class="formboxs_title" translate>
 						Common.Select language
 					</div>
-					<select
-						[(ngModel)]="lang"
-						(ngModelChange)="ts.prepare_words(lang)"
-						class="translate__select"
-						placeholder="Translate"
-					>
+					<select [(ngModel)]="lang" (ngModelChange)="ts.prepare_words(lang)" class="translate__select"
+						placeholder="Translate">
 						<option *ngFor="let l of ts.languages" [value]="l.code">
 							{{l.name}}
 						</option>
@@ -21,11 +17,7 @@
 					<div class="formboxs_title" translate>
 						Common.Select page
 					</div>
-					<select
-						[(ngModel)]="page"
-						class="translate__select"
-						placeholder="Translate"
-					>
+					<select [(ngModel)]="page" class="translate__select" placeholder="Translate">
 						<option [value]="''" translate>Common.All</option>
 						<option *ngFor="let p of ts.pages" [value]="p">
 							{{p}}
@@ -33,33 +25,37 @@
 					</select>
 				</label>
 			</div>
-			<wbutton
-				class="translate__dawn-jcon"
-				(click)="ts.download_json()"
-			>
-				<span translate>Common.Download JSON</span>
-			</wbutton>
+
+			<div class="translate__buttons">
+				<wbutton class="translate__dawn-jcon">
+					<span class="material-icons ng-tns-c405976996-4">translate</span>
+
+					<span translate>Common.Translate all</span>
+
+				</wbutton>
+
+				<wbutton class="translate__dawn-jcon" (click)="ts.download_json()">
+					<span class="material-icons ng-tns-c405976996-4">download</span>
+
+					<span translate>Common.Download JSON</span>
+				</wbutton>
+			</div>
+
 		</div>
 		<div class="main__sub-inner translate__main-wrap">
-			<div
-				*ngFor="let word of ts.words|search:page:'page'"
-				class="translate__main-inner"
-			>
+			<div *ngFor="let word of ts.words|search:page:'page'" class="translate__main-inner">
 				<div class="main__contant-inner">
 					<div class="formboxs_label">
-						<span>
-							{{word.word}}
-						</span>
+						<span>{{word.word}}</span>
+
+						<span class="material-icons translate__btn">translate</span>
+
 						<div class="img-close" (click)="ts.delete(word)"></div>
 					</div>
 					<label class="formbox" for="">
-						<input
-							placeholder="{{'Common.Translate'|translate}}"
+						<input placeholder="{{'Common.Translate'|translate}}"
 							(ngModelChange)="ts.update_translate(word.slug, lang, word.translate)"
-							[(ngModel)]="word.translate"
-							class="input"
-							type="text"
-						/>
+							[(ngModel)]="word.translate" class="input" type="text" />
 					</label>
 				</div>
 			</div>
