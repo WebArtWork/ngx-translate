@@ -6,6 +6,7 @@ import { TranslatesComponent } from './translates.component';
 import { WacomModule } from 'wacom';
 import { TranslateModule } from '../../translate.module';
 import { ButtonModule } from 'src/app/modules/button/button.module';
+import { TableModule } from 'src/app/modules/table/table.module';
 
 const routes: Routes = [
 	{
@@ -21,6 +22,7 @@ const routes: Routes = [
 		CommonModule,
 		ButtonModule,
 		FormsModule,
+		TableModule,
 		WacomModule
 	],
 	declarations: [TranslatesComponent],
