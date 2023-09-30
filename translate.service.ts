@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { CoreService, HttpService, StoreService } from 'wacom';
+import { languages } from './languages';
 
 export interface Language {
 	code: string;
 	name: string;
+	origin: string;
 }
 
 interface Word {
@@ -18,10 +20,12 @@ interface Word {
 	providedIn: 'root'
 })
 export class TranslateService {
+	readonly allLanguages = languages;
+
 	constructor(
+		private store: StoreService,
 		private http: HttpService,
-		private core: CoreService,
-		private store: StoreService
+		private core: CoreService
 	) {
 		this.store.getJson('translates', (translates) => {
 			if (translates) {
@@ -105,7 +109,8 @@ export class TranslateService {
 		: [
 				{
 					code: 'en',
-					name: 'English'
+					name: 'English',
+					origin: 'English'
 				}
 		  ];
 
@@ -113,7 +118,8 @@ export class TranslateService {
 		? this.languages[0]
 		: {
 				code: 'en',
-				name: 'English'
+				name: 'English',
+				origin: 'English'
 		  };
 
 	translates: any = {};
