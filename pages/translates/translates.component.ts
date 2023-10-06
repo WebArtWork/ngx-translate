@@ -52,24 +52,6 @@ export class TranslatesComponent {
 			this._form.modal<Translate>(this.form, [], doc).then((updated: Translate) => {
 				this._http.post('/api/translate/create', { slug: doc.slug, lang: this.lang, translate: updated.translate });
 			});
-		},
-		delete: (translate: Translate) => {
-			this._alert.question({
-				text: this.ts.translate(
-					'Are you sure you want to delete this translate?'
-				),
-				buttons: [
-					{
-						text: this.ts.translate('Common.No')
-					},
-					{
-						text: this.ts.translate('Common.Yes'),
-						callback: () => {
-							// this.ts.delete(user);
-						}
-					}
-				]
-			});
 		}
 	};
 
