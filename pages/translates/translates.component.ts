@@ -27,11 +27,9 @@ export class TranslatesComponent {
 				}
 			}
 		],
-		update: (doc: User) => {
-			this._form.modal<User>(this.form, [], doc).then((updated: User) => {
-				this._core.copy(updated, doc);
-
-				// this.ts.save(doc);
+		update: (doc: Translate) => {
+			this._form.modal<Translate>(this.form, [], doc).then((updated: Translate) => {
+				this._http.post('/api/translate/create', { slug: doc.slug, lang: this.lang, translate: updated.translate });
 			});
 		},
 		delete: (user: User) => {
