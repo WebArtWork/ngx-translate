@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { TranslateService } from '../../translate.service';
 import { FormInterface } from 'src/app/modules/form/interfaces/form.interface';
 import { FormService } from 'src/app/modules/form/form.service';
-import { AlertService, CoreService } from 'wacom';
+import { AlertService, CoreService, HttpService } from 'wacom';
 
 interface Translate {
 	translate: string;
@@ -38,13 +38,13 @@ export class TranslatesComponent {
 			}
 		]
 	});
+
 	config = {
 		buttons: [
 			{
 				icon: 'translate',
 				click: (element: Translate) => {
 					console.log(element);
-
 				}
 			}
 		],
@@ -55,8 +55,6 @@ export class TranslatesComponent {
 		}
 	};
 
-
-
 	page = '';
 
 	lang: string = this.ts.language ? this.ts.language.code : 'en';
@@ -64,7 +62,8 @@ export class TranslatesComponent {
 	constructor(
 		public ts: TranslateService,
 		private _alert: AlertService,
-		private _core: CoreService,
-		private _form: FormService
+		private _form: FormService,
+		private _http: HttpService
 	) {}
 }
+
