@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { TranslateService } from '../../translate.service';
 import { FormInterface } from 'src/app/modules/form/interfaces/form.interface';
 import { FormService } from 'src/app/modules/form/form.service';
-import { AlertService, CoreService, HttpService } from 'wacom';
+import { CoreService, HttpService } from 'wacom';
+import { AlertService } from 'src/app/modules/alert/alert.service';
 
 interface Translate {
 	translate: string;
