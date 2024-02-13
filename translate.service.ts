@@ -33,17 +33,15 @@ export class TranslateService {
 			}
 		});
 
-		this.store.get('language', (code) => {
-			if (code) {
-				const index = this.languages.map((l) => l.code).indexOf(code);
-
-				if (index >= 0) this.language = this.languages[index];
-			}
-		});
-
 		this.store.getJson('words', (words) => {
 			if (words) {
 				this.words = words;
+			}
+		});
+
+		this.store.getJson('language', (language: Language) => {
+			if (language) {
+				this.set_language(language);
 			}
 		});
 
@@ -69,8 +67,6 @@ export class TranslateService {
 
 				this._wordsLoaded = true;
 			}
-
-			this.prepare_words(this.language.code);
 		});
 	}
 
@@ -79,14 +75,6 @@ export class TranslateService {
 	words: Word[] = [];
 
 	pages: string[] = [];
-
-	prepare_words(lang: string) {
-		for (let j = 0; j < this.words.length; j++) {
-			this.words[j].translate = this.translates[lang]
-				? this.translates[lang][this.words[j].slug]
-				: '';
-		}
-	}
 
 	delete(word: Word) {
 		for (let i = this.words.length - 1; i >= 0; i--) {
@@ -104,8 +92,10 @@ export class TranslateService {
 
 	/* Translate Use */
 
-	languages: Language[] = environment.hasOwnProperty('languages')
-		? (environment as unknown as { languages: [] }).languages
+	languages: Language[] = (
+		environment as unknown as { languages: Language[] }
+	).languages
+		? (environment as unknown as { languages: Language[] }).languages
 		: [
 				{
 					code: 'en',
@@ -113,7 +103,6 @@ export class TranslateService {
 					origin: 'English'
 				}
 		  ];
-
 	language: Language = this.languages.length
 		? this.languages[0]
 		: {
@@ -121,12 +110,36 @@ export class TranslateService {
 				name: 'English',
 				origin: 'English'
 		  };
+	set_language(language: Language) {
+		if (language) {
+			this.language = language;
+
+			this.reset();
+
+			this.store.setJson('language', language);
+		}
+	}
+	next_language() {
+		for (let i = 0; i < this.languages.length; i++) {
+			if (this.languages[i].code === this.language.code) {
+				if (this.languages.length - 1 === i) {
+					this.language = this.languages[0];
+				} else {
+					this.language = this.languages[i + 1];
+				}
+				break;
+			}
+		}
+
+		this.store.setJson('language', this.language);
+	}
 
 	translates: any = {};
 
 	resets: any = {};
-
+	now = Date.now();
 	reset() {
+		this.now = Date.now();
 		for (const slug in this.resets) {
 			if (Array.isArray(this.resets[slug])) {
 				for (let i = 0; i < this.resets[slug].length; i++) {
@@ -164,7 +177,12 @@ export class TranslateService {
 			return this.translates[this.language.code][slug];
 		}
 
-		if (this.words.map((w) => w?.slug || '').filter(w => !!w).indexOf(slug) < 0) {
+		if (
+			this.words
+				.map((w) => w?.slug || '')
+				.filter((w) => !!w)
+				.indexOf(slug) < 0
+		) {
 			this.create_word(slug);
 		}
 
@@ -237,27 +255,6 @@ export class TranslateService {
 
 			link.remove();
 		});
-	}
-
-	set_language(language: Language) {
-		this.language = language;
-
-		this.store.set('language', language.code);
-	}
-
-	next_language() {
-		for (let i = 0; i < this.languages.length; i++) {
-			if (this.languages[i].code === this.language.code) {
-				if (this.languages.length - 1 === i) {
-					this.language = this.languages[0];
-				} else {
-					this.language = this.languages[i + 1];
-				}
-				break;
-			}
-		}
-
-		this.store.set('language', this.language.code);
 	}
 
 	private _slug2name(slug: string) {

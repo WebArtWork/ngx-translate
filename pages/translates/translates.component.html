@@ -6,31 +6,23 @@
 					<div class="formboxs_title" translate>
 						Common.Select language
 					</div>
-					<select
-						[(ngModel)]="lang"
-						(ngModelChange)="ts.prepare_words(lang)"
-						class="translate__select"
-						placeholder="Translate"
-					>
-						<option *ngFor="let l of ts.languages" [value]="l.code">
-							{{l.name}}
-						</option>
-					</select>
+					<wselect
+						value="code"
+						[items]="ts.languages"
+						[select]="ts.language.code"
+						(modelChange)="set_language($event)"
+					></wselect>
 				</label>
 				<label class="formboxs" for="">
 					<div class="formboxs_title" translate>
 						Common.Select page
 					</div>
-					<select
-						[(ngModel)]="page"
-						class="translate__select"
-						placeholder="Translate"
-					>
-						<option [value]="''" translate>Common.All</option>
-						<option *ngFor="let p of ts.pages" [value]="p">
-							{{p}}
-						</option>
-					</select>
+					<wselect
+						style="width: 300px;"
+						[items]="pages"
+						[select]="page"
+						(modelChange)="setPage($event)"
+					></wselect>
 				</label>
 			</div>
 
@@ -56,9 +48,9 @@
 			</div>
 		</div>
 
-		<wtable [columns]="columns" [config]="config" [rows]="ts.words">
+		<wtable [columns]="columns" [config]="config" [rows]="rows">
 			<ng-template cell="translation" let-element>
-				{{element.slug|translate}}
+				{{element.slug|translate:ts.now}}
 			</ng-template>
 		</wtable>
 	</div>

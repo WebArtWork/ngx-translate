@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { TranslateService } from '../../translate.service';
+import { Language, TranslateService } from '../../translate.service';
 import { FormInterface } from 'src/app/modules/form/interfaces/form.interface';
 import { FormService } from 'src/app/modules/form/form.service';
 import { CoreService, HttpService } from 'wacom';
@@ -50,20 +50,58 @@ export class TranslatesComponent {
 			}
 		],
 		update: (doc: Translate) => {
-			this._form.modal<Translate>(this.form, [], doc).then((updated: Translate) => {
-				this._http.post('/api/translate/create', { slug: doc.slug, lang: this.lang, translate: updated.translate });
-			});
+			this._form
+				.modal<Translate>(this.form, [], {
+					translate: this.ts.translate(doc.slug)
+				})
+				.then((updated: Translate) => {
+					this._http.post('/api/translate/create', {
+						slug: doc.slug,
+						lang: this.ts.language.code,
+						translate: updated.translate
+					});
+					this.ts.translates[this.ts.language.code][doc.slug] = updated.translate;
+					this.ts.reset();
+				});
 		}
 	};
 
-	page = '';
+	set_language(code: string) {
+		this.ts.set_language(
+			this.ts.languages.find((l) => l.code === code) as Language
+		);
+	}
 
-	lang: string = this.ts.language ? this.ts.language.code : 'en';
+	pages = [
+		{
+			name: this.ts.translate('Common.All'),
+			_id: ''
+		}
+	].concat(
+		this.ts.pages.map((p: string) => {
+			return {
+				name: p,
+				_id: p
+			};
+		})
+	);
+	page = localStorage.getItem('page') || '';
+	setPage(page: string) {
+		this.page = page;
+		localStorage.setItem('page', page);
+	}
+
+	get rows() {
+		return this.ts.words.filter((w) => {
+			return this.page ? this.page === w.slug.split('.')[0] : true;
+		});
+	}
 
 	constructor(
 		public ts: TranslateService,
-		private _alert: AlertService,
 		private _form: FormService,
 		private _http: HttpService
-	) {}
+	) {
+		console.log(this.page);
+	}
 }

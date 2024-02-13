@@ -6,7 +6,7 @@ import { TranslateService } from './translate.service';
 })
 export class TranslatePipe implements PipeTransform {
 	constructor(private _tr: TranslateService) {}
-	transform(slug: string): string {
+	transform(slug: string, refresh?: number): string {
 		return this._tr.translate(slug);
 	}
 }
