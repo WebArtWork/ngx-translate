@@ -9,8 +9,10 @@ export interface Language {
 	origin: string;
 }
 
-interface Word {
+export interface Word {
 	slug: string;
+	page: string;
+	word: string;
 	translate: string;
 	translate_id?: string;
 	_id?: string;
@@ -25,12 +27,16 @@ export class TranslateService {
 	constructor(
 		private store: StoreService,
 		private http: HttpService,
-		private core: CoreService
+		private _core: CoreService
 	) {
 		this.store.getJson('translates', (translates) => {
 			if (translates) {
 				this.translates = translates || {};
 			}
+		});
+
+		this._core.on('languages', (languages: Language[])=>{
+			this.languages = languages;
 		});
 
 		this.store.getJson('words', (words) => {
@@ -112,6 +118,10 @@ export class TranslateService {
 		  };
 	set_language(language: Language) {
 		if (language) {
+			this.http.post('/api/translate/set', {
+				language: language.code
+			});
+
 			this.language = language;
 
 			this.reset();
@@ -207,7 +217,11 @@ export class TranslateService {
 					page: slug.split('.')[0],
 					lang: this.language.code
 				},
-				(word) => this.words.push(word)
+				(word) => {
+					if (word) {
+						this.words.push(word);
+					}
+				}
 			);
 		} else {
 			setTimeout(() => {
@@ -217,7 +231,7 @@ export class TranslateService {
 	}
 
 	update_translate(slug: string, languageCode: string, translate: string) {
-		this.core.afterWhile(this, () => {
+		this._core.afterWhile(this, () => {
 			this.http.post('/api/translate/create', {
 				slug,
 				translate,

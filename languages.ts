@@ -130,8 +130,8 @@ export const languages = [
 		code: 'nl'
 	},
 	{
-		name: 'English (American)',
-		origin: 'English (American)',
+		name: 'English',
+		origin: 'English',
 		code: 'en'
 	},
 	{

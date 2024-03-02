@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
-import { Language, TranslateService } from '../../translate.service';
+import { Language, TranslateService, Word } from '../../translate.service';
 import { FormInterface } from 'src/app/modules/form/interfaces/form.interface';
 import { FormService } from 'src/app/modules/form/form.service';
-import { CoreService, HttpService } from 'wacom';
-import { AlertService } from 'src/app/modules/alert/alert.service';
+import { HttpService } from 'wacom';
 
 interface Translate {
 	translate: string;
@@ -11,12 +10,17 @@ interface Translate {
 	lang: string;
 }
 
+interface TranslateAll {
+	words: string;
+	translates: string;
+}
+
 @Component({
 	templateUrl: './translates.component.html',
 	styleUrls: ['./translates.component.scss']
 })
 export class TranslatesComponent {
-	columns = ['word', 'translation'];
+	columns = ['page', 'word', 'translation'];
 
 	form: FormInterface = this._form.getForm('translate', {
 		formId: 'translate',
@@ -40,15 +44,51 @@ export class TranslatesComponent {
 		]
 	});
 
-	config = {
-		buttons: [
+	formAll: FormInterface = this._form.getForm('translateAll', {
+		formId: 'translateAll',
+		title: 'Translate All',
+		components: [
 			{
-				icon: 'translate',
-				click: (element: Translate) => {
-					console.log(element);
-				}
+				name: 'Text',
+				key: 'words',
+				fields: [
+					{
+						name: 'Placeholder',
+						value: 'fill Translate'
+					},
+					{
+						name: 'Label',
+						value: 'Translate'
+					}
+				]
+			},
+			{
+				name: 'Text',
+				key: 'translates',
+				focused: true,
+				fields: [
+					{
+						name: 'Placeholder',
+						value: 'fill Translate'
+					},
+					{
+						name: 'Label',
+						value: 'Translate'
+					}
+				]
 			}
-		],
+		]
+	});
+
+	config = {
+		// buttons: [
+		// 	{
+		// 		icon: 'translate',
+		// 		click: (element: Translate) => {
+		// 			console.log(element);
+		// 		}
+		// 	}
+		// ],
 		update: (doc: Translate) => {
 			this._form
 				.modal<Translate>(this.form, [], {
@@ -60,11 +100,47 @@ export class TranslatesComponent {
 						lang: this.ts.language.code,
 						translate: updated.translate
 					});
-					this.ts.translates[this.ts.language.code][doc.slug] = updated.translate;
+					this.ts.translates[this.ts.language.code][doc.slug] =
+						updated.translate;
 					this.ts.reset();
 				});
 		}
 	};
+
+	translateAll(missed = false): void {
+		const rows = missed
+			? this.rows.filter(
+					(r) => !this.ts.translates[this.ts.language.code][r.slug]
+			  )
+			: this.rows;
+		const words = JSON.stringify(rows.map((r) => r.word));
+		const slugs = rows.map((r) => r.slug);
+		const translates = JSON.stringify(
+			rows.map((r) => this.ts.translate(r.slug))
+		);
+		this._form
+			.modal<TranslateAll>(this.formAll, [], {
+				words,
+				translates
+			})
+			.then((updated: TranslateAll) => {
+				if (translates === updated.translates) {
+					return;
+				}
+				const translated = JSON.parse(updated.translates);
+				for (let i = 0; i < slugs.length; i++) {
+					this._http.post('/api/translate/create', {
+						slug: slugs[i],
+						lang: this.ts.language.code,
+						translate: translated[i]
+					});
+
+					this.ts.translates[this.ts.language.code][slugs[i]] =
+						translated[i];
+				}
+				this.ts.reset();
+			});
+	}
 
 	set_language(code: string) {
 		this.ts.set_language(
@@ -91,9 +167,11 @@ export class TranslatesComponent {
 		localStorage.setItem('page', page);
 	}
 
-	get rows() {
+	get rows(): Word[] {
 		return this.ts.words.filter((w) => {
-			return this.page ? this.page === w.slug.split('.')[0] : true;
+			return this.page && typeof w === 'object'
+				? this.page === w.slug.split('.')[0]
+				: true;
 		});
 	}
 
