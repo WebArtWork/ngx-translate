@@ -36,7 +36,7 @@ export class TranslateService {
 			}
 		});
 
-		this._core.on('languages', (languages: Language[]) => {
+		this._core.on('languages').subscribe((languages: Language[]) => {
 			this.languages = languages;
 		});
 
