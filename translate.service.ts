@@ -52,29 +52,35 @@ export class TranslateService {
 			}
 		});
 
-		this.http.get('/api/translate/get' + (this.appId ? '/' + this.appId : ''), (obj) => {
-			if (obj) {
-				this.translates = obj;
+		this.http.get(
+			'/api/translate/get' + (this.appId ? '/' + this.appId : ''),
+			(obj) => {
+				if (obj) {
+					this.translates = obj;
 
-				this.store.setJson('translates', this.translates);
-			}
-		});
-
-		this.http.get('/api/word/get' + (this.appId ? '/' + this.appId : ''), (arr) => {
-			if (arr) {
-				this.words = arr;
-
-				this.store.setJson('words', this.words);
-
-				for (let i = 0; i < arr.length; i++) {
-					if (this.pages.indexOf(arr[i].page) < 0) {
-						this.pages.push(arr[i].page);
-					}
+					this.store.setJson('translates', this.translates);
 				}
-
-				this._wordsLoaded = true;
 			}
-		});
+		);
+
+		this.http.get(
+			'/api/word/get' + (this.appId ? '/' + this.appId : ''),
+			(arr) => {
+				if (arr) {
+					this.words = arr;
+
+					this.store.setJson('words', this.words);
+
+					for (let i = 0; i < arr.length; i++) {
+						if (this.pages.indexOf(arr[i].page) < 0) {
+							this.pages.push(arr[i].page);
+						}
+					}
+
+					this._wordsLoaded = true;
+				}
+			}
+		);
 	}
 
 	/* Translate Management */
@@ -88,13 +94,19 @@ export class TranslateService {
 			if (this.words[i]._id == word._id) this.words.splice(i, 1);
 		}
 
-		this.http.post('/api/word/delete' + (this.appId ? '/' + this.appId : ''), {
-			_id: word._id
-		});
+		this.http.post(
+			'/api/word/delete' + (this.appId ? '/' + this.appId : ''),
+			{
+				_id: word._id
+			}
+		);
 
-		this.http.post('/api/translate/delete' + (this.appId ? '/' + this.appId : ''), {
-			slug: word.slug
-		});
+		this.http.post(
+			'/api/translate/delete' + (this.appId ? '/' + this.appId : ''),
+			{
+				slug: word.slug
+			}
+		);
 	}
 
 	/* Translate Use */
@@ -104,19 +116,24 @@ export class TranslateService {
 	).languages
 		? (environment as unknown as { languages: Language[] }).languages
 		: [
-			{
+				{
+					code: 'en',
+					name: 'English',
+					origin: 'English'
+				}
+		  ];
+
+	language: Language = (environment as unknown as { language: Language })
+		.language
+		? (environment as unknown as { language: Language }).language
+		: this.languages.length
+		? this.languages[0]
+		: {
 				code: 'en',
 				name: 'English',
 				origin: 'English'
-			}
-		];
-	language: Language = this.languages.length
-		? this.languages[0]
-		: {
-			code: 'en',
-			name: 'English',
-			origin: 'English'
-		};
+		  };
+
 	set_language(language: Language) {
 		if (language) {
 			this.http.post('/api/translate/set', {
