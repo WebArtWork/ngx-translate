@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Language, TranslateService, Word } from '../../translate.service';
-import { FormInterface } from 'src/app/modules/form/interfaces/form.interface';
-import { FormService } from 'src/app/modules/form/form.service';
+import { FormInterface } from 'src/app/core/modules/form/interfaces/form.interface';
+import { FormService } from 'src/app/core/modules/form/form.service';
 import { HttpService } from 'wacom';
 
 interface Translate {

@@ -52,88 +52,79 @@ export class TranslateService {
 			}
 		});
 
-		this.http.get(
-			'/api/translate/get' + (this.appId ? '/' + this.appId : ''),
-			(obj) => {
-				if (obj) {
-					this.translates = obj;
-
-					this.store.setJson('translates', this.translates);
-				}
+		this.http.get('/api/translate/get' + (this.appId ? '/' + this.appId : ''), (obj) => {
+			if (obj) {
+				this.translates = obj;
+				this.store.setJson('translates', this.translates);
 			}
-		);
+		});
 
-		this.http.get(
-			'/api/word/get' + (this.appId ? '/' + this.appId : ''),
-			(arr) => {
-				if (arr) {
-					this.words = arr;
-
-					this.store.setJson('words', this.words);
-
-					for (let i = 0; i < arr.length; i++) {
-						if (this.pages.indexOf(arr[i].page) < 0) {
-							this.pages.push(arr[i].page);
-						}
+		this.http.get('/api/word/get' + (this.appId ? '/' + this.appId : ''), (arr) => {
+			if (arr) {
+				this.words = arr;
+				this.store.setJson('words', this.words);
+				for (let i = 0; i < arr.length; i++) {
+					if (this.pages.indexOf(arr[i].page) < 0) {
+						this.pages.push(arr[i].page);
 					}
-
-					this._wordsLoaded = true;
 				}
+				this._wordsLoaded = true;
 			}
-		);
+		});
 	}
 
-	/* Translate Management */
-
+	// Array of all words for translation
 	words: Word[] = [];
 
+	// Array of pages for words
 	pages: string[] = [];
 
+	/**
+	 * Deletes a word and its associated translation from the backend and local state.
+	 * @param word - The word object to delete.
+	 */
 	delete(word: Word) {
 		for (let i = this.words.length - 1; i >= 0; i--) {
 			if (this.words[i]._id == word._id) this.words.splice(i, 1);
 		}
 
-		this.http.post(
-			'/api/word/delete' + (this.appId ? '/' + this.appId : ''),
-			{
-				_id: word._id
-			}
-		);
+		this.http.post('/api/word/delete' + (this.appId ? '/' + this.appId : ''), {
+			_id: word._id
+		});
 
-		this.http.post(
-			'/api/translate/delete' + (this.appId ? '/' + this.appId : ''),
-			{
-				slug: word.slug
-			}
-		);
+		this.http.post('/api/translate/delete' + (this.appId ? '/' + this.appId : ''), {
+			slug: word.slug
+		});
 	}
 
 	/* Translate Use */
 
+	// Array of supported languages
 	languages: Language[] = (
 		environment as unknown as { languages: Language[] }
 	).languages
 		? (environment as unknown as { languages: Language[] }).languages
 		: [
-				{
-					code: 'en',
-					name: 'English',
-					origin: 'English'
-				}
-		  ];
-
-	language: Language = (environment as unknown as { language: Language })
-		.language
-		? (environment as unknown as { language: Language }).language
-		: this.languages.length
-		? this.languages[0]
-		: {
+			{
 				code: 'en',
 				name: 'English',
 				origin: 'English'
-		  };
+			}
+		];
 
+	// Currently selected language
+	language: Language = this.languages.length
+		? this.languages[0]
+		: {
+			code: 'en',
+			name: 'English',
+			origin: 'English'
+		};
+
+	/**
+	 * Sets the current language and updates the translations.
+	 * @param language - The language object to set as current.
+	 */
 	set_language(language: Language) {
 		if (language) {
 			this.http.post('/api/translate/set', {
@@ -148,6 +139,10 @@ export class TranslateService {
 			this.store.setJson('language', language);
 		}
 	}
+
+	/**
+	 * Switches to the next available language.
+	 */
 	next_language() {
 		for (let i = 0; i < this.languages.length; i++) {
 			if (this.languages[i].code === this.language.code) {
@@ -163,10 +158,15 @@ export class TranslateService {
 		this.store.setJson('language', this.language);
 	}
 
+	// Dictionary of translations
 	translates: any = {};
 
 	resets: any = {};
 	now = Date.now();
+
+	/**
+	 * Resets all translations for the current language.
+	 */
 	reset() {
 		this.now = Date.now();
 		for (const slug in this.resets) {
@@ -187,6 +187,12 @@ export class TranslateService {
 		}
 	}
 
+	/**
+	 * Translates a slug into its corresponding string for the current language.
+	 * @param slug - The translation key.
+	 * @param reset - Optional reset callback to handle dynamic updates.
+	 * @returns The translated string.
+	 */
 	translate(slug: string, reset?: (translate: string) => void) {
 		if (!slug) return '';
 
@@ -220,6 +226,11 @@ export class TranslateService {
 
 	private _created: Record<string, boolean> = {};
 	private _wordsLoaded = false;
+
+	/**
+	 * Creates a new word in the backend and adds it to the list of words.
+	 * @param slug - The translation key to create.
+	 */
 	create_word(slug: string) {
 		if (this._created[slug]) {
 			return;
@@ -250,6 +261,12 @@ export class TranslateService {
 		}
 	}
 
+	/**
+	 * Updates an existing translation in the backend and triggers any associated reset callbacks.
+	 * @param slug - The translation key.
+	 * @param languageCode - The language code for the translation.
+	 * @param translate - The translated string.
+	 */
 	update_translate(slug: string, languageCode: string, translate: string) {
 		this._core.afterWhile(this, () => {
 			this.http.post('/api/translate/create', {
@@ -274,6 +291,9 @@ export class TranslateService {
 		});
 	}
 
+	/**
+	 * Downloads the translations as a JSON file.
+	 */
 	download_json() {
 		this.http.get('/api/translate/get_translates', (obj) => {
 			const dataStr =
@@ -292,6 +312,11 @@ export class TranslateService {
 		});
 	}
 
+	/**
+	 * Converts a slug into a more human-readable name.
+	 * @param slug - The slug to convert.
+	 * @returns The human-readable name.
+	 */
 	private _slug2name(slug: string) {
 		return slug.substr(slug.indexOf('.') + 1);
 	}
