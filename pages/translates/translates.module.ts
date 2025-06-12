@@ -1,14 +1,13 @@
-import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { Routes, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, Routes } from '@angular/router';
+import { TranslatesComponent } from './translates.component';
 import { WacomModule } from 'wacom';
 import { TranslateModule } from '../../translate.module';
-import { TranslatesComponent } from './translates.component';
-
-import { SelectModule } from 'src/app/core/modules/select/select.module';
+import { ButtonModule } from 'src/app/core/modules/button/button.module';
 import { TableModule } from 'src/app/core/modules/table/table.module';
-import { ButtonComponent } from '../../../button/button.component';
+import { SelectModule } from 'src/app/core/modules/select/select.module';
 
 const routes: Routes = [
 	{
@@ -19,15 +18,15 @@ const routes: Routes = [
 
 @NgModule({
 	imports: [
-    RouterModule.forChild(routes),
-    TranslateModule,
-    CommonModule,
-    FormsModule,
-    TableModule,
-    WacomModule,
-    SelectModule,
-	ButtonComponent
-],
+		RouterModule.forChild(routes),
+		TranslateModule,
+		CommonModule,
+		ButtonModule,
+		FormsModule,
+		TableModule,
+		WacomModule,
+		SelectModule
+	],
 	declarations: [TranslatesComponent],
 	providers: []
 })
