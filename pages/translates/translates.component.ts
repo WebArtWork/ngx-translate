@@ -22,7 +22,7 @@ interface TranslateAll {
 })
 export class TranslatesComponent {
 	columns = ['page', 'word', 'translation'];
-	form: FormInterface = this._form.prepareForm({
+	form: FormInterface = this._form.getForm('translate', {
 		formId: 'translate',
 		title: 'Translate',
 		components: [
@@ -47,7 +47,7 @@ export class TranslatesComponent {
 			}
 		]
 	});
-	formAll: FormInterface = this._form.prepareForm({
+	formAll: FormInterface = this._form.getForm('translateAll', {
 		formId: 'translateAll',
 		title: 'Translate All',
 		components: [
